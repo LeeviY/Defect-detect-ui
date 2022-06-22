@@ -119,10 +119,10 @@ namespace Defect_detect_ui
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.imageBox1.FunctionalMode = Emgu.CV.UI.ImageBox.FunctionalModeOption.RightClickMenu;
-            this.imageBox1.Location = new System.Drawing.Point(0, 0);
-            this.imageBox1.Margin = new System.Windows.Forms.Padding(0);
+            this.imageBox1.Location = new System.Drawing.Point(0, 3);
+            this.imageBox1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.imageBox1.Name = "imageBox1";
-            this.imageBox1.Size = new System.Drawing.Size(474, 292);
+            this.imageBox1.Size = new System.Drawing.Size(474, 286);
             this.imageBox1.TabIndex = 2;
             this.imageBox1.TabStop = false;
             // 
@@ -132,10 +132,10 @@ namespace Defect_detect_ui
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.imageBox2.FunctionalMode = Emgu.CV.UI.ImageBox.FunctionalModeOption.RightClickMenu;
-            this.imageBox2.Location = new System.Drawing.Point(484, 10);
-            this.imageBox2.Margin = new System.Windows.Forms.Padding(10);
+            this.imageBox2.Location = new System.Drawing.Point(474, 0);
+            this.imageBox2.Margin = new System.Windows.Forms.Padding(0);
             this.imageBox2.Name = "imageBox2";
-            this.imageBox2.Size = new System.Drawing.Size(454, 272);
+            this.imageBox2.Size = new System.Drawing.Size(474, 292);
             this.imageBox2.TabIndex = 2;
             this.imageBox2.TabStop = false;
             // 
@@ -158,10 +158,10 @@ namespace Defect_detect_ui
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.imageBox4.FunctionalMode = Emgu.CV.UI.ImageBox.FunctionalModeOption.RightClickMenu;
-            this.imageBox4.Location = new System.Drawing.Point(0, 292);
-            this.imageBox4.Margin = new System.Windows.Forms.Padding(0);
+            this.imageBox4.Location = new System.Drawing.Point(0, 295);
+            this.imageBox4.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.imageBox4.Name = "imageBox4";
-            this.imageBox4.Size = new System.Drawing.Size(474, 292);
+            this.imageBox4.Size = new System.Drawing.Size(474, 286);
             this.imageBox4.TabIndex = 2;
             this.imageBox4.TabStop = false;
             // 

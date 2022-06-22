@@ -43,9 +43,9 @@ namespace Defect_detect_ui
         {
             Mat cannyImg = new();
             CvInvoke.Threshold(image, cannyImg, 128, 255, ThresholdType.Binary | ThresholdType.Otsu);
-            //resizeImage(image, image.Width / 2, image.Height / 2);
+            resizeImage(image, image.Width / 2, image.Height / 2);
             CvInvoke.Canny(cannyImg, cannyImg, 180, 120);
-            //resizeImage(image, image.Width * 2, image.Height * 2);
+            resizeImage(image, image.Width * 2, image.Height * 2);
             return cannyImg;
         }
 

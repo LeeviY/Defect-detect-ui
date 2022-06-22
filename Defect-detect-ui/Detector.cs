@@ -74,7 +74,7 @@ namespace Defect_detect_ui
         private (MKeyPoint[], Mat) detectHoles(ref Mat inImg, ref Mat outImg)
         {
             Mat whiteBlackImg = ImgProcessor.otsuBinariseImage(inImg);
-            MKeyPoint[] brightKeypoints = ObjDetector.detectBlobs(ref inImg, 255);
+            MKeyPoint[] brightKeypoints = ObjDetector.detectBlobs(ref whiteBlackImg, 255);
             ObjDrawer.drawPoints(ref outImg, ref brightKeypoints, Color.Blue);
             return (brightKeypoints, whiteBlackImg);
         }
