@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 
+
 using Emgu.CV;
 using Emgu.CV.UI;
 
@@ -10,20 +11,20 @@ namespace Defect_detect_ui
 {
     public partial class MainWindow : Form
     {
-        private string[] filePaths;
-        private int fileIndex;
+        private string[] _filePaths;
+        private int _fileIndex;
 
-        Detector detector;
+        private Detector _detector;
         public MainWindow()
         {
             InitializeComponent();
 
             string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
             string imageDirectory = projectDirectory + @"\Images";
-            filePaths = Directory.GetFiles(imageDirectory, "*.bmp");
+            _filePaths = Directory.GetFiles(imageDirectory, "*.bmp");
             string filename = imageDirectory + @"\SV_image_-766126070.bmp";
 
-            detector = new Detector(filename);
+            _detector = new Detector(filename);
         }
 
         public void addImageToBox(Mat image, int boxIndex)
@@ -37,30 +38,30 @@ namespace Defect_detect_ui
         private void setDefaults()
         {
             // Default values for blob detection
-            detector.ObjDetector.setBlobParams();
-            detector.setDefaultValues();
+            _detector.ObjDetector.setBlobParams();
+            _detector.setDefaultValues();
 
-            trackBarArea.Value = (int)(detector.ObjDetector.BlobParams.MinArea);
-            trackBarCircularity.Value = (int)(detector.ObjDetector.BlobParams.MinCircularity * 100);
-            trackBarConvexity.Value = (int)(detector.ObjDetector.BlobParams.MinConvexity * 100);
-            trackBarInertia.Value = (int)(detector.ObjDetector.BlobParams.MinInertiaRatio * 100);
+            trackBarArea.Value = (int)(_detector.ObjDetector.BlobParams.MinArea);
+            trackBarCircularity.Value = (int)(_detector.ObjDetector.BlobParams.MinCircularity * 100);
+            trackBarConvexity.Value = (int)(_detector.ObjDetector.BlobParams.MinConvexity * 100);
+            trackBarInertia.Value = (int)(_detector.ObjDetector.BlobParams.MinInertiaRatio * 100);
 
-            trackBarThreshold.Value = detector.thresholdOffset;
-            trackBarErode.Value = detector.erodeIter;
-            trackBarDilate.Value = detector.dilateIter;
+            trackBarThreshold.Value = _detector.ThresholdOffset;
+            trackBarErode.Value = _detector.ErodeIter;
+            trackBarDilate.Value = _detector.DilateIter;
 
-            detector.detect(this);
+            _detector.detect(this);
         }
 
         // Reloads images from blob detection
         private void reloadBlobImages()
         {
-            detector.resetOutputImg();
+            _detector.resetOutputImg();
 
-            (Mat blackWhiteImg, Mat subBlackWhiteImg) = detector.runKnotStainDetect();
-            (Mat whiteBlackImg, Mat subWhiteBlackImg) = detector.runHoleCrackDetect();
+            (Mat blackWhiteImg, Mat subBlackWhiteImg) = _detector.runKnotStainDetect();
+            (Mat whiteBlackImg, Mat subWhiteBlackImg) = _detector.runHoleCrackDetect();
 
-            addImageToBox(detector.getOutputImg(), 0);
+            addImageToBox(_detector.getOutputImg(), 0);
             addImageToBox(blackWhiteImg, 1);
             addImageToBox(subBlackWhiteImg, 4);
             addImageToBox(whiteBlackImg, 2);
@@ -103,46 +104,46 @@ namespace Defect_detect_ui
 
         private void trackBarArea_Scroll(object sender, EventArgs e)
         {
-            detector.ObjDetector.setBlobParams(area: trackBarArea.Value);
+            _detector.ObjDetector.setBlobParams(area: trackBarArea.Value);
             reloadBlobImages();
         }
 
         private void trackBarCircularity_Scroll(object sender, EventArgs e)
         {
             float value = trackBarCircularity.Value / 100.0f;
-            detector.ObjDetector.setBlobParams(circularity: value);
+            _detector.ObjDetector.setBlobParams(circularity: value);
             reloadBlobImages();
         }
 
         private void trackBarConvexity_Scroll(object sender, EventArgs e)
         {
             float value = trackBarConvexity.Value / 100.0f;
-            detector.ObjDetector.setBlobParams(convexity: value);
+            _detector.ObjDetector.setBlobParams(convexity: value);
             reloadBlobImages();
         }
 
         private void trackBarInertia_Scroll(object sender, EventArgs e)
         {
             float value = trackBarInertia.Value / 100.0f;
-            detector.ObjDetector.setBlobParams(inertia: value);
+            _detector.ObjDetector.setBlobParams(inertia: value);
             reloadBlobImages();
         }
 
         private void trackBarThreshold_Scroll(object sender, EventArgs e)
         {
-            detector.thresholdOffset = trackBarThreshold.Value;
+            _detector.ThresholdOffset = trackBarThreshold.Value;
             reloadBlackWhiteImages();
         }
 
         private void trackBarErode_Scroll(object sender, EventArgs e)
         {
-            detector.erodeIter = trackBarErode.Value;
+            _detector.ErodeIter = trackBarErode.Value;
             reloadBlackWhiteImages();
         }
 
         private void trackBarDilate_Scroll(object sender, EventArgs e)
         {
-            detector.dilateIter = trackBarDilate.Value;
+            _detector.DilateIter = trackBarDilate.Value;
             reloadBlackWhiteImages();
         }
 
@@ -154,22 +155,22 @@ namespace Defect_detect_ui
 
         private void buttonPrevious_Click(object sender, EventArgs e)
         {
-            if (--fileIndex < 0)
+            if (--_fileIndex < 0)
             {
-                fileIndex = filePaths.Length - 1;
+                _fileIndex = _filePaths.Length - 1;
             }
-            detector.openImage(filePaths[fileIndex]);
-            detector.detect(this);
+            _detector.openImage(_filePaths[_fileIndex]);
+            _detector.detect(this);
         }
 
         private void buttonNext_Click(object sender, EventArgs e)
         {
-            if (++fileIndex > filePaths.Length - 1)
+            if (++_fileIndex > _filePaths.Length - 1)
             {
-                fileIndex = 0;
+                _fileIndex = 0;
             }
-            detector.openImage(filePaths[fileIndex]);
-            detector.detect(this);
+            _detector.openImage(_filePaths[_fileIndex]);
+            _detector.detect(this);
         }
     }
 }

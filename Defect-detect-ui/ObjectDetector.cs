@@ -15,7 +15,7 @@ namespace Defect_detect_ui
 {
     internal class ObjectDetector
     {
-        private struct RectangleParams 
+        public struct RectangleParams 
         {
             public RectangleParams(int minArea, int minAngle, int maxAngle)
             {
@@ -24,13 +24,13 @@ namespace Defect_detect_ui
                 MaxTheta = maxAngle;
             }
 
-            public int MinArea { get; set; }
-            public int MinTheta { get; set; }
-            public int MaxTheta { get; set; }                
+            public int MinArea;
+            public int MinTheta;
+            public int MaxTheta;                
         };
 
         public SimpleBlobDetectorParams BlobParams;
-        private RectangleParams RectParams;
+        public RectangleParams RectParams;
 
         public ObjectDetector()
         {

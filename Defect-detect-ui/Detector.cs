@@ -1,71 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-
-using Emgu.CV;
+﻿using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace Defect_detect_ui
 {
     internal class Detector
     {
-        private ImageProcessor ImgProcessor;
-        public ObjectDetector ObjDetector { get; set; }
-        private ObjectDrawer ObjDrawer;
+        public ObjectDetector ObjDetector;
 
-        private int Padding;
+        private const int OUTER_PADDING = 50;
 
-        private Mat outPutImg;
-        private Mat colorImg;
-        private Mat grayImg;
-        private RotatedRect roi;
+        private Mat _outPutImg;
+        private Mat _colorImg;
+        private Mat _grayImg;
+        private RotatedRect _roi;
 
-        public int thresholdOffset;
-        public int erodeIter;
-        public int dilateIter;
+        public int ThresholdOffset;
+        public int ErodeIter;
+        public int DilateIter;
 
         public Detector(string filename)
         {
-            ImgProcessor = new();
             ObjDetector = new();
-            ObjDrawer = new();
-            Padding = 50;
 
-            thresholdOffset = 0;
-            erodeIter = 3;
-            dilateIter = 6;
+            _outPutImg = new Mat();
+            _colorImg = new Mat();
+            _grayImg = new Mat();
+
+            ThresholdOffset = 0;
+            ErodeIter = 3;
+            DilateIter = 6;
 
             openImage(filename);
         }
 
         public void openImage(string filename)
         {
-            colorImg = ImgProcessor.readImage(filename, ImreadModes.Color);
-            outPutImg = colorImg.Clone();
-            grayImg = new();
-            CvInvoke.CvtColor(colorImg, grayImg, ColorConversion.Bgr2Gray);
+            _colorImg = ImageProcessor.ReadImage(filename, ImreadModes.Color);
+            _outPutImg = _colorImg.Clone();
+            _grayImg = new();
+            CvInvoke.CvtColor(_colorImg, _grayImg, ColorConversion.Bgr2Gray);
         }
 
         private (List<RotatedRect>, Mat) detectBoardEdge(ref Mat inImg, ref Mat outImg)
         {
-            Mat borderImage = ImgProcessor.addImageBorder(inImg, this.Padding);
-            Mat cannyImage = ImgProcessor.toCannyImage(borderImage);
+            Mat borderImage = ImageProcessor.AddImageBorder(inImg, OUTER_PADDING);
+            Mat cannyImage = ImageProcessor.ToCannyImage(borderImage);
             List<RotatedRect> boxList = ObjDetector.detectRectangles(ref cannyImage);
-            ObjDrawer.drawRectangles(ref outImg, boxList, Padding);
+            ObjectDrawer.DrawRectangles(ref outImg, boxList, OUTER_PADDING);
 
             if (boxList.Count == 0)
             {
-                this.roi = new RotatedRect(new PointF(colorImg.Width / 2, colorImg.Height / 2), 
-                                            new SizeF(colorImg.Width, colorImg.Height), 0);
+                this._roi = new RotatedRect(new PointF(_colorImg.Width / 2, _colorImg.Height / 2), 
+                                            new SizeF(_colorImg.Width, _colorImg.Height), 0);
             }
             else
             {
-                this.roi = boxList[0];
+                this._roi = boxList[0];
             }
 
             return (boxList, cannyImage);
@@ -73,9 +67,9 @@ namespace Defect_detect_ui
 
         private (MKeyPoint[], Mat) detectHoles(ref Mat inImg, ref Mat outImg)
         {
-            Mat whiteBlackImg = ImgProcessor.otsuBinariseImage(inImg);
+            Mat whiteBlackImg = ImageProcessor.OtsuBinariseImage(inImg);
             MKeyPoint[] brightKeypoints = ObjDetector.detectBlobs(ref whiteBlackImg, 255);
-            ObjDrawer.drawPoints(ref outImg, ref brightKeypoints, Color.Blue);
+            ObjectDrawer.DrawPoints(ref outImg, ref brightKeypoints, Color.Blue);
             return (brightKeypoints, whiteBlackImg);
         }
 
@@ -88,21 +82,21 @@ namespace Defect_detect_ui
 
         private (MKeyPoint[], Mat) detectKnots(ref Mat inImg, ref Mat outImg, int threshold, int erode = 3, int dilate = 6)
         {
-            Mat blackWhiteImg = ImgProcessor.binariseImage(inImg, threshold);
+            Mat blackWhiteImg = ImageProcessor.BinariseImage(inImg, threshold);
             CvInvoke.Erode(blackWhiteImg, blackWhiteImg, null, new Point(-1, -1), erode,
                 BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
             CvInvoke.Dilate(blackWhiteImg, blackWhiteImg, null, new Point(-1, -1), dilate,
                 BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
 
             MKeyPoint[] darkKeyPoints = ObjDetector.detectBlobs(ref blackWhiteImg, 0);
-            ObjDrawer.drawPoints(ref outImg, ref darkKeyPoints, Color.Red);
+            ObjectDrawer.DrawPoints(ref outImg, ref darkKeyPoints, Color.Red);
             return (darkKeyPoints, blackWhiteImg);
         }
 
         private (bool, Mat) detectStains(ref Mat inImg, ref MKeyPoint[] darkKeyPoints)
         {
             Mat subBlackWhiteImg = inImg.Clone();
-            ObjDrawer.drawPoints(ref subBlackWhiteImg, ref darkKeyPoints, Color.White, 2, -1);
+            ObjectDrawer.DrawPoints(ref subBlackWhiteImg, ref darkKeyPoints, Color.White, 2, -1);
             double[] meanDarknessArr = CvInvoke.Mean(inImg).ToArray();
             double meanDarkness = meanDarknessArr.Sum() / meanDarknessArr.Length;
 
@@ -112,7 +106,7 @@ namespace Defect_detect_ui
         private (bool, Mat) detectCracks(ref Mat inImg, ref MKeyPoint[] brightKeypoints, RotatedRect roi)
         {
             Mat subWhiteBlackImg = inImg.Clone();
-            ObjDrawer.drawPoints(ref subWhiteBlackImg, ref brightKeypoints, Color.Black, 2, -1);
+            ObjectDrawer.DrawPoints(ref subWhiteBlackImg, ref brightKeypoints, Color.Black, 2, -1);
             Mat roiWhiteBlackImage = new();
             Rectangle rect = new Rectangle((int)(roi.Center.X - roi.Size.Width / 2),
                                         (int)(roi.Center.Y - roi.Size.Height / 2),
@@ -129,7 +123,7 @@ namespace Defect_detect_ui
         // Runs edge detection
         public Mat runBoardEdgeDetect()
         {
-            (List<RotatedRect> boxList, Mat cannyImg) = detectBoardEdge(ref this.grayImg, ref this.outPutImg);
+            (List<RotatedRect> boxList, Mat cannyImg) = detectBoardEdge(ref this._grayImg, ref this._outPutImg);
             return cannyImg;
         }
 
@@ -137,8 +131,8 @@ namespace Defect_detect_ui
         // Returns images of bright spots
         public (Mat, Mat) runHoleCrackDetect()
         {
-            (MKeyPoint[] brightKeypoints, Mat whiteBlackImg) = detectHoles(ref this.grayImg, ref this.outPutImg);
-            (bool isCracked, Mat subWhiteBlackImg) = detectCracks(ref whiteBlackImg, ref brightKeypoints, this.roi);
+            (MKeyPoint[] brightKeypoints, Mat whiteBlackImg) = detectHoles(ref this._grayImg, ref this._outPutImg);
+            (bool isCracked, Mat subWhiteBlackImg) = detectCracks(ref whiteBlackImg, ref brightKeypoints, this._roi);
 
             return (whiteBlackImg, subWhiteBlackImg);
         }
@@ -147,9 +141,9 @@ namespace Defect_detect_ui
         // Returns images of dark spots
         public (Mat, Mat) runKnotStainDetect()
         {
-            int meanColor = calculateMeanColor(ref this.outPutImg);
-            (MKeyPoint[] darkKeyPoints, Mat blackWhiteImg) = detectKnots(ref this.grayImg, ref this.outPutImg, 
-                meanColor / 2 + this.thresholdOffset, this.erodeIter, this.dilateIter);
+            int meanColor = calculateMeanColor(ref this._outPutImg);
+            (MKeyPoint[] darkKeyPoints, Mat blackWhiteImg) = detectKnots(ref this._grayImg, ref this._outPutImg, 
+                meanColor / 2 + this.ThresholdOffset, this.ErodeIter, this.DilateIter);
             (bool isStained, Mat subBlackWhiteImg) = detectStains(ref blackWhiteImg, ref darkKeyPoints);
 
             return (blackWhiteImg, subBlackWhiteImg);
@@ -158,17 +152,17 @@ namespace Defect_detect_ui
         public void detect(MainWindow win)
         {
             #region Detect board edge
-            (List<RotatedRect> boxList, Mat cannyImg) = detectBoardEdge(ref grayImg, ref outPutImg);
+            (List<RotatedRect> boxList, Mat cannyImg) = detectBoardEdge(ref _grayImg, ref _outPutImg);
             #endregion
 
             #region Detect holes
-            (MKeyPoint[] brightKeypoints, Mat whiteBlackImg) = detectHoles(ref grayImg, ref outPutImg);
+            (MKeyPoint[] brightKeypoints, Mat whiteBlackImg) = detectHoles(ref _grayImg, ref _outPutImg);
             #endregion
 
             #region Detect knots
-            int meanColor = calculateMeanColor(ref outPutImg);
-            (MKeyPoint[] darkKeyPoints, Mat blackWhiteImg) = detectKnots(ref grayImg, ref outPutImg, 
-                meanColor / 2 + this.thresholdOffset, this.erodeIter, this.dilateIter);
+            int meanColor = calculateMeanColor(ref _outPutImg);
+            (MKeyPoint[] darkKeyPoints, Mat blackWhiteImg) = detectKnots(ref _grayImg, ref _outPutImg, 
+                meanColor / 2 + this.ThresholdOffset, this.ErodeIter, this.DilateIter);
             #endregion
 
             #region Detect stains
@@ -176,10 +170,10 @@ namespace Defect_detect_ui
             #endregion
 
             #region Detect cracks
-            (bool isCracked, Mat subWhiteBlackImg) = detectCracks(ref whiteBlackImg, ref brightKeypoints, this.roi);
+            (bool isCracked, Mat subWhiteBlackImg) = detectCracks(ref whiteBlackImg, ref brightKeypoints, this._roi);
             #endregion
 
-            win.addImageToBox(outPutImg, 0);
+            win.addImageToBox(_outPutImg, 0);
             win.addImageToBox(cannyImg, 3);
             win.addImageToBox(blackWhiteImg, 1);
             win.addImageToBox(subBlackWhiteImg, 4);
@@ -189,19 +183,19 @@ namespace Defect_detect_ui
 
         public Mat getOutputImg()
         {
-            return outPutImg;
+            return _outPutImg;
         }
 
         public void resetOutputImg()
         {
-            outPutImg = colorImg.Clone();
+            _outPutImg = _colorImg.Clone();
         }
 
         public void setDefaultValues()
         {
-            this.thresholdOffset = 0;
-            this.erodeIter = 3;
-            this.dilateIter = 6;
+            this.ThresholdOffset = 0;
+            this.ErodeIter = 3;
+            this.DilateIter = 6;
         }
     }
 }

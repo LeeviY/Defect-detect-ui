@@ -16,10 +16,6 @@ namespace Defect_detect_ui
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-            string imageDirectory = projectDirectory + "\\Images";
-            string filename = imageDirectory + "\\SV_image_-766126070.bmp";
-
             MainWindow form = new();
 
             Application.Run(form);
