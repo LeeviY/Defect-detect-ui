@@ -2,6 +2,7 @@
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -21,6 +22,8 @@ namespace Defect_detect_ui
         public int ThresholdOffset;
         public int ErodeIter;
         public int DilateIter;
+
+        private double last;
 
         public Detector(string filename)
         {
@@ -97,8 +100,10 @@ namespace Defect_detect_ui
         {
             Mat subBlackWhiteImg = inImg.Clone();
             ObjectDrawer.DrawPoints(ref subBlackWhiteImg, ref darkKeyPoints, Color.White, 2, -1);
-            double[] meanDarknessArr = CvInvoke.Mean(inImg).ToArray();
-            double meanDarkness = meanDarknessArr.Sum() / meanDarknessArr.Length;
+            double meanDarkness = CvInvoke.Mean(inImg/*subBlackWhiteImg*/).ToArray()[0];
+
+            Debug.WriteLine($"Mean: {meanDarkness}, Mean diff {meanDarkness - last} ");
+            this.last = meanDarkness;
 
             return (false, subBlackWhiteImg);
         }
@@ -141,7 +146,8 @@ namespace Defect_detect_ui
         // Returns images of dark spots
         public (Mat, Mat) runKnotStainDetect()
         {
-            int meanColor = calculateMeanColor(ref this._outPutImg);
+            int meanColor = calculateMeanColor(ref this._colorImg);
+
             (MKeyPoint[] darkKeyPoints, Mat blackWhiteImg) = detectKnots(ref this._grayImg, ref this._outPutImg, 
                 meanColor / 2 + this.ThresholdOffset, this.ErodeIter, this.DilateIter);
             (bool isStained, Mat subBlackWhiteImg) = detectStains(ref blackWhiteImg, ref darkKeyPoints);
