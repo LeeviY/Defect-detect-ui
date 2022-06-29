@@ -52,9 +52,10 @@ namespace Defect_detect_ui
                 VectorOfPoint contour = contours[i];
                 VectorOfPoint approxContour = new();
 
-                CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05,true);
+                CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05, true);
                 if (CvInvoke.ContourArea(approxContour, false) > 250)
                 {
+                    Debug.WriteLine("Countour size: " + approxContour.Length);
                     if (approxContour.Size == 4)
                     {
                         #region determine if all the angles in the contour are within [80, 100] degree
@@ -75,6 +76,32 @@ namespace Defect_detect_ui
 
                         #endregion
                         if (isRectangle) boxList.Add(CvInvoke.MinAreaRect(approxContour));
+                    }
+                }
+            }
+
+            return boxList;
+        }
+
+        public VectorOfVectorOfPoint detectRectangle(ref Mat image)
+        {
+            VectorOfVectorOfPoint boxList = new();
+
+            VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+            CvInvoke.FindContours(image, contours, null, RetrType.External, ChainApproxMethod.ChainApproxSimple);
+
+            for (int i = 0; i < contours.Size; i++)
+            {
+                VectorOfPoint contour = contours[i];
+                VectorOfPoint approxContour = new();
+
+                CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05, true);
+                if (CvInvoke.ContourArea(approxContour, false) > 250)
+                {
+                    Debug.WriteLine("Countour size: " + approxContour.Size);
+                    //if (approxContour.Size == 4)
+                    {
+                        boxList.Push(approxContour);
                     }
                 }
             }

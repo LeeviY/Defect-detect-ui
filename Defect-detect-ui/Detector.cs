@@ -51,9 +51,20 @@ namespace Defect_detect_ui
         private (List<RotatedRect>, Mat) detectBoardEdge(ref Mat inImg, ref Mat outImg)
         {
             Mat borderImage = ImageProcessor.AddImageBorder(inImg, OUTER_PADDING);
+
+            CvInvoke.Erode(borderImage, borderImage, null, new Point(-1, -1), 3,
+                BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
+            CvInvoke.Dilate(borderImage, borderImage, null, new Point(-1, -1), 6,
+                BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
+
             Mat cannyImage = ImageProcessor.ToCannyImage(borderImage);
+
+            CvInvoke.Imshow("", cannyImage);
+
             List<RotatedRect> boxList = ObjDetector.detectRectangles(ref cannyImage);
             ObjectDrawer.DrawRectangles(ref outImg, boxList, OUTER_PADDING);
+           
+            //CvInvoke.DrawContours(outImg, ObjDetector.detectRectangle(ref cannyImage), -1, new Bgr(Color.Green).MCvScalar);
 
             if (boxList.Count == 0)
             {
