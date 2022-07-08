@@ -59,8 +59,6 @@ namespace Defect_detect_ui
 
             Mat cannyImage = ImageProcessor.ToCannyImage(borderImage);
 
-            CvInvoke.Imshow("", cannyImage);
-
             List<RotatedRect> boxList = ObjDetector.detectRectangles(ref cannyImage);
             ObjectDrawer.DrawRectangles(ref outImg, boxList, OUTER_PADDING);
            

@@ -41,19 +41,18 @@ namespace Defect_detect_ui
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.trackBarThreshold = new System.Windows.Forms.TrackBar();
-            this.labelThresholdValue = new System.Windows.Forms.Label();
             this.trackBarErode = new System.Windows.Forms.TrackBar();
             this.trackBarDilate = new System.Windows.Forms.TrackBar();
-            this.labelErodeValue = new System.Windows.Forms.Label();
-            this.labelDilateValue = new System.Windows.Forms.Label();
             this.buttonDefault = new System.Windows.Forms.Button();
             this.buttonPrevious = new System.Windows.Forms.Button();
             this.buttonNext = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.buttonCapture = new System.Windows.Forms.Button();
+            this.labelThresholdValue = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.labelErodeValue = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.labelDilateValue = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.trackBarArea = new System.Windows.Forms.TrackBar();
             this.trackBarCircularity = new System.Windows.Forms.TrackBar();
@@ -68,7 +67,6 @@ namespace Defect_detect_ui
             this.labelConvexity = new System.Windows.Forms.Label();
             this.labelInertia = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox2)).BeginInit();
@@ -214,27 +212,25 @@ namespace Defect_detect_ui
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 6;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.16129F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.677417F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.677417F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.16129F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.16129F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.16129F));
             this.tableLayoutPanel3.Controls.Add(this.trackBarThreshold, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.labelThresholdValue, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.trackBarErode, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.trackBarDilate, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.labelErodeValue, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.labelDilateValue, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.buttonDefault, 5, 2);
             this.tableLayoutPanel3.Controls.Add(this.buttonPrevious, 4, 1);
             this.tableLayoutPanel3.Controls.Add(this.buttonNext, 5, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label1, 4, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label2, 5, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label5, 2, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label4, 2, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label3, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.button1, 3, 1);
+            this.tableLayoutPanel3.Controls.Add(this.labelThresholdValue, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label3, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label4, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.labelErodeValue, 2, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label5, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.labelDilateValue, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.buttonCapture, 3, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(361, 0);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -253,20 +249,10 @@ namespace Defect_detect_ui
             this.trackBarThreshold.Maximum = 30;
             this.trackBarThreshold.Minimum = -30;
             this.trackBarThreshold.Name = "trackBarThreshold";
-            this.trackBarThreshold.Size = new System.Drawing.Size(171, 45);
+            this.trackBarThreshold.Size = new System.Drawing.Size(208, 45);
             this.trackBarThreshold.TabIndex = 2;
             this.trackBarThreshold.TickFrequency = 3;
             this.trackBarThreshold.Scroll += new System.EventHandler(this.trackBarThreshold_Scroll);
-            // 
-            // labelThresholdValue
-            // 
-            this.labelThresholdValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelThresholdValue.AutoSize = true;
-            this.labelThresholdValue.Location = new System.Drawing.Point(180, 23);
-            this.labelThresholdValue.Name = "labelThresholdValue";
-            this.labelThresholdValue.Size = new System.Drawing.Size(38, 15);
-            this.labelThresholdValue.TabIndex = 3;
-            this.labelThresholdValue.Text = "label1";
             // 
             // trackBarErode
             // 
@@ -274,7 +260,7 @@ namespace Defect_detect_ui
             this.trackBarErode.LargeChange = 1;
             this.trackBarErode.Location = new System.Drawing.Point(3, 69);
             this.trackBarErode.Name = "trackBarErode";
-            this.trackBarErode.Size = new System.Drawing.Size(171, 45);
+            this.trackBarErode.Size = new System.Drawing.Size(208, 45);
             this.trackBarErode.TabIndex = 5;
             this.trackBarErode.Scroll += new System.EventHandler(this.trackBarErode_Scroll);
             // 
@@ -284,29 +270,9 @@ namespace Defect_detect_ui
             this.trackBarDilate.LargeChange = 1;
             this.trackBarDilate.Location = new System.Drawing.Point(3, 130);
             this.trackBarDilate.Name = "trackBarDilate";
-            this.trackBarDilate.Size = new System.Drawing.Size(171, 45);
+            this.trackBarDilate.Size = new System.Drawing.Size(208, 45);
             this.trackBarDilate.TabIndex = 6;
             this.trackBarDilate.Scroll += new System.EventHandler(this.trackBarDilate_Scroll);
-            // 
-            // labelErodeValue
-            // 
-            this.labelErodeValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelErodeValue.AutoSize = true;
-            this.labelErodeValue.Location = new System.Drawing.Point(180, 84);
-            this.labelErodeValue.Name = "labelErodeValue";
-            this.labelErodeValue.Size = new System.Drawing.Size(38, 15);
-            this.labelErodeValue.TabIndex = 7;
-            this.labelErodeValue.Text = "label1";
-            // 
-            // labelDilateValue
-            // 
-            this.labelDilateValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelDilateValue.AutoSize = true;
-            this.labelDilateValue.Location = new System.Drawing.Point(180, 145);
-            this.labelDilateValue.Name = "labelDilateValue";
-            this.labelDilateValue.Size = new System.Drawing.Size(38, 15);
-            this.labelDilateValue.TabIndex = 8;
-            this.labelDilateValue.Text = "label1";
             // 
             // buttonDefault
             // 
@@ -322,7 +288,7 @@ namespace Defect_detect_ui
             // buttonPrevious
             // 
             this.buttonPrevious.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.buttonPrevious.Location = new System.Drawing.Point(807, 80);
+            this.buttonPrevious.Location = new System.Drawing.Point(768, 80);
             this.buttonPrevious.Name = "buttonPrevious";
             this.buttonPrevious.Size = new System.Drawing.Size(75, 23);
             this.buttonPrevious.TabIndex = 10;
@@ -333,7 +299,7 @@ namespace Defect_detect_ui
             // buttonNext
             // 
             this.buttonNext.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.buttonNext.Location = new System.Drawing.Point(888, 80);
+            this.buttonNext.Location = new System.Drawing.Point(849, 80);
             this.buttonNext.Name = "buttonNext";
             this.buttonNext.Size = new System.Drawing.Size(75, 23);
             this.buttonNext.TabIndex = 9;
@@ -341,50 +307,76 @@ namespace Defect_detect_ui
             this.buttonNext.UseVisualStyleBackColor = true;
             this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
             // 
-            // label1
+            // buttonCapture
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(711, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 15);
-            this.label1.TabIndex = 11;
-            this.label1.Text = "label1";
+            this.buttonCapture.Location = new System.Drawing.Point(421, 3);
+            this.buttonCapture.Name = "buttonCapture";
+            this.buttonCapture.Size = new System.Drawing.Size(75, 23);
+            this.buttonCapture.TabIndex = 16;
+            this.buttonCapture.Text = "Capture";
+            this.buttonCapture.UseVisualStyleBackColor = true;
+            this.buttonCapture.Click += new System.EventHandler(this.buttonCapture_Click);
             // 
-            // label2
+            // labelThresholdValue
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(888, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 15);
-            this.label2.TabIndex = 12;
-            this.label2.Text = "label2";
+            this.labelThresholdValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelThresholdValue.AutoSize = true;
+            this.labelThresholdValue.Location = new System.Drawing.Point(319, 23);
+            this.labelThresholdValue.Name = "labelThresholdValue";
+            this.labelThresholdValue.Size = new System.Drawing.Size(38, 15);
+            this.labelThresholdValue.TabIndex = 3;
+            this.labelThresholdValue.Text = "label1";
             // 
             // label3
             // 
+            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(357, 0);
+            this.label3.Location = new System.Drawing.Point(218, 23);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 15);
+            this.label3.Size = new System.Drawing.Size(95, 15);
             this.label3.TabIndex = 13;
-            this.label3.Text = "label3";
+            this.label3.Text = "Threshold offset:";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(357, 61);
+            this.label4.Location = new System.Drawing.Point(273, 84);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(38, 15);
+            this.label4.Size = new System.Drawing.Size(40, 15);
             this.label4.TabIndex = 14;
-            this.label4.Text = "label4";
+            this.label4.Text = "Dilate:";
+            // 
+            // labelErodeValue
+            // 
+            this.labelErodeValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelErodeValue.AutoSize = true;
+            this.labelErodeValue.Location = new System.Drawing.Point(319, 84);
+            this.labelErodeValue.Name = "labelErodeValue";
+            this.labelErodeValue.Size = new System.Drawing.Size(38, 15);
+            this.labelErodeValue.TabIndex = 7;
+            this.labelErodeValue.Text = "label1";
             // 
             // label5
             // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(357, 122);
+            this.label5.Location = new System.Drawing.Point(273, 145);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(38, 15);
+            this.label5.Size = new System.Drawing.Size(40, 15);
             this.label5.TabIndex = 15;
-            this.label5.Text = "label5";
+            this.label5.Text = "Erode:";
+            // 
+            // labelDilateValue
+            // 
+            this.labelDilateValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelDilateValue.AutoSize = true;
+            this.labelDilateValue.Location = new System.Drawing.Point(319, 145);
+            this.labelDilateValue.Name = "labelDilateValue";
+            this.labelDilateValue.Size = new System.Drawing.Size(38, 15);
+            this.labelDilateValue.TabIndex = 8;
+            this.labelDilateValue.Text = "label1";
             // 
             // tableLayoutPanel2
             // 
@@ -551,15 +543,6 @@ namespace Defect_detect_ui
             this.labelInertia.Text = "Inertia:";
             this.labelInertia.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(534, 64);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -630,11 +613,9 @@ namespace Defect_detect_ui
         private Label labelDilateValue;
         private Button buttonPrevious;
         private Button buttonNext;
-        private Label label1;
-        private Label label2;
         private Label label3;
         private Label label4;
         private Label label5;
-        private Button button1;
+        private Button buttonCapture;
     }
 }

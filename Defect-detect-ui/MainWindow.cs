@@ -25,6 +25,8 @@ namespace Defect_detect_ui
             string filename = imageDirectory + @"\SV_image_-766126070.bmp";
 
             _detector = new Detector(filename);
+
+            CameraCapture.capture();
         }
 
         public void addImageToBox(Mat image, int boxIndex)
@@ -171,6 +173,16 @@ namespace Defect_detect_ui
             }
             _detector.openImage(_filePaths[_fileIndex]);
             _detector.detect(this);
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonCapture_Click(object sender, EventArgs e)
+        {
+            CameraCapture.capture();
         }
     }
 }
