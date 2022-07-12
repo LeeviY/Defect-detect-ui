@@ -182,7 +182,8 @@ namespace Defect_detect_ui
 
         private void buttonCapture_Click(object sender, EventArgs e)
         {
-            CameraCapture.capture();
+            CameraCapture.captureCameras(new int[2] { 0, 1 });
+            CameraCapture.captureCameras(new int[2] { 0, 1 });
         }
     }
 }

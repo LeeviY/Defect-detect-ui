@@ -17,14 +17,31 @@ namespace Defect_detect_ui
 {
     internal class CameraCapture
     {
-        public static void capture(int camIndex = 0)
+        public static Mat capture(int camIndex = 0)
         {
             VideoCapture capture = new(camIndex, VideoCapture.API.DShow);
-            using (var frame = capture.QueryFrame())
+            Mat frame = capture.QueryFrame();
+            return frame;
+        }
+
+        public static void captureCameras(int[] camIndexes)
+        {
+            Mat output = capture(camIndexes[0]);
+            Size imageSize = output.Size;
+
+            for (int i = 1; i < camIndexes.Length; ++i)
             {
-                CvInvoke.Imshow("a", frame);
-                //frame.Save("frame.jpg");
+                Mat frame = capture(camIndexes[i]);
+                CvInvoke.Resize(frame, frame, imageSize);
+                CvInvoke.HConcat(output, frame, output);
             }
+
+            CvInvoke.Imshow("", output);
+        }
+
+        private void concatImages()
+        {
+
         }
     }
 }
