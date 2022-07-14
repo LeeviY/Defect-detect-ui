@@ -52,27 +52,34 @@ namespace Defect_detect_ui
             trackBarErode.Value = _detector.ErodeIter;
             trackBarDilate.Value = _detector.DilateIter;
 
-            _detector.detect(this);
+            //_detector.detect(this);
         }
 
         // Reloads images from blob detection
-        private void reloadBlobImages()
+        private void reloadImages()
         {
             _detector.resetOutputImg();
 
-            (Mat blackWhiteImg, Mat subBlackWhiteImg) = _detector.runKnotStainDetect();
-            (Mat whiteBlackImg, Mat subWhiteBlackImg) = _detector.runHoleCrackDetect();
+            _detector.runBoardEdgedetect();
+            double brigthness = _detector.runKnotStainDetect();
+            double darkness = _detector.runHoleCrackDetect();
+            
+            _detector.drawObjects();
 
-            addImageToBox(_detector.getOutputImg(), 0);
-            addImageToBox(blackWhiteImg, 1);
-            addImageToBox(subBlackWhiteImg, 4);
-            addImageToBox(whiteBlackImg, 2);
-            addImageToBox(subWhiteBlackImg, 5);
+            addImageToBox(_detector.OutputImages.OutPutImage, 0);
+            addImageToBox(_detector.OutputImages.BlackWhiteImage, 1);
+            addImageToBox(_detector.OutputImages.CannyImage, 3);
+            addImageToBox(_detector.OutputImages.SubBlackWhiteImage, 4);
+            addImageToBox(_detector.OutputImages.WhiteBlackImage, 2);
+            addImageToBox(_detector.OutputImages.SubWhiteBlackImage, 5);
+
+            labelCrackValue.Text = Math.Round(brigthness, 3).ToString();
+            labelStainValue.Text = Math.Round(darkness, 3).ToString();
         }
 
         private void reloadBlackWhiteImages()
         {
-            reloadBlobImages();
+            reloadImages();
             /*detector.resetOutputImg();
 
             (Mat blackWhiteImg, Mat subBlackWhiteImg) = detector.runKnotStainDetect();
@@ -102,33 +109,34 @@ namespace Defect_detect_ui
             labelDilateValue.DataBindings.Add("Text", trackBarDilate, "Value");
 
             setDefaults();
+            reloadImages();
         }
 
         private void trackBarArea_Scroll(object sender, EventArgs e)
         {
             _detector.ObjDetector.setBlobParams(area: trackBarArea.Value);
-            reloadBlobImages();
+            reloadImages();
         }
 
         private void trackBarCircularity_Scroll(object sender, EventArgs e)
         {
             float value = trackBarCircularity.Value / 100.0f;
             _detector.ObjDetector.setBlobParams(circularity: value);
-            reloadBlobImages();
+            reloadImages();
         }
 
         private void trackBarConvexity_Scroll(object sender, EventArgs e)
         {
             float value = trackBarConvexity.Value / 100.0f;
             _detector.ObjDetector.setBlobParams(convexity: value);
-            reloadBlobImages();
+            reloadImages();
         }
 
         private void trackBarInertia_Scroll(object sender, EventArgs e)
         {
             float value = trackBarInertia.Value / 100.0f;
             _detector.ObjDetector.setBlobParams(inertia: value);
-            reloadBlobImages();
+            reloadImages();
         }
 
         private void trackBarThreshold_Scroll(object sender, EventArgs e)
@@ -162,7 +170,7 @@ namespace Defect_detect_ui
                 _fileIndex = _filePaths.Length - 1;
             }
             _detector.openImage(_filePaths[_fileIndex]);
-            _detector.detect(this);
+            reloadImages();
         }
 
         private void buttonNext_Click(object sender, EventArgs e)
@@ -172,7 +180,7 @@ namespace Defect_detect_ui
                 _fileIndex = 0;
             }
             _detector.openImage(_filePaths[_fileIndex]);
-            _detector.detect(this);
+            reloadImages();
         }
 
         private void label3_Click(object sender, EventArgs e)

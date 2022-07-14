@@ -17,6 +17,11 @@ namespace Defect_detect_ui
 {
     internal class CameraCapture
     {
+        /// <summary>
+        /// Captures an image from a webcam
+        /// </summary>
+        /// <param name="camIndex">Index of camera given by os</param>
+        /// <returns>Image as a matrix</returns>
         public static Mat capture(int camIndex = 0)
         {
             VideoCapture capture = new(camIndex, VideoCapture.API.DShow);
@@ -24,6 +29,10 @@ namespace Defect_detect_ui
             return frame;
         }
 
+        /// <summary>
+        /// Creates an image from cameras of given indexes
+        /// </summary>
+        /// <param name="camIndexes">a list of indexes for cameras to be used</param>
         public static void captureCameras(int[] camIndexes)
         {
             Mat output = capture(camIndexes[0]);
@@ -37,11 +46,6 @@ namespace Defect_detect_ui
             }
 
             CvInvoke.Imshow("", output);
-        }
-
-        private void concatImages()
-        {
-
         }
     }
 }

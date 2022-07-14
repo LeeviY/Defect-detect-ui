@@ -6,12 +6,25 @@ namespace Defect_detect_ui
 {
     internal class ImageProcessor
     {
+        /// <summary>
+        /// Opens an image.
+        /// </summary>
+        /// <param name="filename">path to image file</param>
+        /// <param name="mode">mode for </param>
+        /// <returns></returns>
         public static Mat ReadImage(string filename, ImreadModes mode)
         {
             Mat image = CvInvoke.Imread(filename, mode);
             return image;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
         public static Mat ResizeImage(Mat image, int width, int height)
         {
             Mat resized = new();
@@ -20,6 +33,11 @@ namespace Defect_detect_ui
             return resized;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
         public static Mat OtsuBinariseImage(Mat image)
         {
             Mat binImg = new();
@@ -27,6 +45,12 @@ namespace Defect_detect_ui
             return binImg;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="threshold"></param>
+        /// <returns></returns>
         public static Mat BinariseImage(Mat image, int threshold)
         {
             Mat binImg = new();
@@ -34,6 +58,11 @@ namespace Defect_detect_ui
             return binImg;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
         public static Mat ToCannyImage(Mat image)
         {
             Mat cannyImg = OtsuBinariseImage(image);
@@ -43,6 +72,12 @@ namespace Defect_detect_ui
             return cannyImg;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
         public static Mat AddImageBorder(Mat image, int size)
         {
             Mat borderImg = new();

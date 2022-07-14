@@ -138,5 +138,17 @@ namespace Defect_detect_ui
 
             return keypoints;
         }
+
+        public double detectStains(ref Mat image)
+        {
+            double[] mean = CvInvoke.Mean(image).ToArray();
+            return mean[0] / 255;
+        }
+
+        public double detectCracks(ref Mat image, RotatedRect roi)
+        {
+            double[] mean = CvInvoke.Mean(image).ToArray();
+            return mean[0] / 255;
+        }
     }
 }

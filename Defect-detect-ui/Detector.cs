@@ -25,9 +25,39 @@ namespace Defect_detect_ui
 
         private double last;
 
+        public RotatedRect BoardEdge { get; private set; }
+        public MKeyPoint[] Knots { get; private set; }
+        public MKeyPoint[] Holes { get; private set; }
+        public ImageSet OutputImages; //{ get; private set; }
+
+        public struct ImageSet
+        {
+            public ImageSet()
+            {
+                OutPutImage = new();
+                ColorImage = new();
+                GrayImage = new();
+                CannyImage = new();
+                BlackWhiteImage = new();
+                WhiteBlackImage = new();
+                SubBlackWhiteImage = new();
+                SubWhiteBlackImage = new();
+            }
+
+            public Mat OutPutImage;
+            public Mat ColorImage;
+            public Mat GrayImage;
+            public Mat CannyImage;
+            public Mat BlackWhiteImage;
+            public Mat WhiteBlackImage;
+            public Mat SubBlackWhiteImage;
+            public Mat SubWhiteBlackImage;
+        }
+
         public Detector(string filename)
         {
             ObjDetector = new();
+            OutputImages = new();
 
             _outPutImg = new Mat();
             _colorImg = new Mat();
@@ -36,6 +66,9 @@ namespace Defect_detect_ui
             ThresholdOffset = 0;
             ErodeIter = 3;
             DilateIter = 6;
+
+            Knots = System.Array.Empty<MKeyPoint>();
+            Holes = System.Array.Empty<MKeyPoint>();
 
             openImage(filename);
         }
@@ -48,162 +81,121 @@ namespace Defect_detect_ui
             CvInvoke.CvtColor(_colorImg, _grayImg, ColorConversion.Bgr2Gray);
         }
 
-        private (List<RotatedRect>, Mat) detectBoardEdge(ref Mat inImg, ref Mat outImg)
+        private void detectBoardEdge(ref Mat inImg)
         {
+            // Add padding around image
             Mat borderImage = ImageProcessor.AddImageBorder(inImg, OUTER_PADDING);
 
+            // Apply smoothing
             CvInvoke.Erode(borderImage, borderImage, null, new Point(-1, -1), 3,
                 BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
             CvInvoke.Dilate(borderImage, borderImage, null, new Point(-1, -1), 6,
                 BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
 
             Mat cannyImage = ImageProcessor.ToCannyImage(borderImage);
+            this.OutputImages.CannyImage = cannyImage;
 
             List<RotatedRect> boxList = ObjDetector.detectRectangles(ref cannyImage);
-            ObjectDrawer.DrawRectangles(ref outImg, boxList, OUTER_PADDING);
-           
-            //CvInvoke.DrawContours(outImg, ObjDetector.detectRectangle(ref cannyImage), -1, new Bgr(Color.Green).MCvScalar);
 
+            // If no border is found sets board edge as half of image size.
             if (boxList.Count == 0)
             {
-                this._roi = new RotatedRect(new PointF(_colorImg.Width / 2, _colorImg.Height / 2), 
-                                            new SizeF(_colorImg.Width, _colorImg.Height), 0);
+                this.BoardEdge = new RotatedRect(new PointF(_colorImg.Width / 2, _colorImg.Height / 2), 
+                                                 new SizeF(_colorImg.Width, _colorImg.Height), 0);
             }
             else
             {
-                this._roi = boxList[0];
+                this.BoardEdge = boxList[0];
             }
-
-            return (boxList, cannyImage);
         }
 
-        private (MKeyPoint[], Mat) detectHoles(ref Mat inImg, ref Mat outImg)
+        private void detectHoles(ref Mat inImg)
         {
-            Mat whiteBlackImg = ImageProcessor.OtsuBinariseImage(inImg);
-            MKeyPoint[] brightKeypoints = ObjDetector.detectBlobs(ref whiteBlackImg, 255);
-            ObjectDrawer.DrawPoints(ref outImg, ref brightKeypoints, Color.Blue);
-            return (brightKeypoints, whiteBlackImg);
+            this.OutputImages.WhiteBlackImage = ImageProcessor.OtsuBinariseImage(inImg);
+            this.Holes = ObjDetector.detectBlobs(ref this.OutputImages.WhiteBlackImage, 255);
         }
 
         private int calculateMeanColor(ref Mat inImg)
         {
             MCvScalar means = CvInvoke.Mean(inImg);
-
             return (int)(means.V0 + means.V1) / 2;
         }
 
-        private (MKeyPoint[], Mat) detectKnots(ref Mat inImg, ref Mat outImg, int threshold, int erode = 3, int dilate = 6)
+        private void detectKnots(ref Mat inImg, int threshold, int erode = 3, int dilate = 6)
         {
-            Mat blackWhiteImg = ImageProcessor.BinariseImage(inImg, threshold);
-            CvInvoke.Erode(blackWhiteImg, blackWhiteImg, null, new Point(-1, -1), erode,
+            this.OutputImages.BlackWhiteImage = ImageProcessor.BinariseImage(inImg, threshold);
+            CvInvoke.Erode(this.OutputImages.BlackWhiteImage, this.OutputImages.BlackWhiteImage, null, new Point(-1, -1), erode,
                 BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
-            CvInvoke.Dilate(blackWhiteImg, blackWhiteImg, null, new Point(-1, -1), dilate,
+            CvInvoke.Dilate(this.OutputImages.BlackWhiteImage, this.OutputImages.BlackWhiteImage, null, new Point(-1, -1), dilate,
                 BorderType.Default, CvInvoke.MorphologyDefaultBorderValue);
 
-            MKeyPoint[] darkKeyPoints = ObjDetector.detectBlobs(ref blackWhiteImg, 0);
-            ObjectDrawer.DrawPoints(ref outImg, ref darkKeyPoints, Color.Red);
-            return (darkKeyPoints, blackWhiteImg);
+            this.Knots = ObjDetector.detectBlobs(ref this.OutputImages.BlackWhiteImage, 0);
         }
 
-        private (bool, Mat) detectStains(ref Mat inImg, ref MKeyPoint[] darkKeyPoints)
+        private void detectStains()
         {
-            Mat subBlackWhiteImg = inImg.Clone();
-            ObjectDrawer.DrawPoints(ref subBlackWhiteImg, ref darkKeyPoints, Color.White, 2, -1);
-            double meanDarkness = CvInvoke.Mean(inImg/*subBlackWhiteImg*/).ToArray()[0];
+            this.OutputImages.SubBlackWhiteImage = this.OutputImages.BlackWhiteImage.Clone();
+            ObjectDrawer.DrawPoints(ref this.OutputImages.SubBlackWhiteImage, this.Knots, Color.White, 2, -1);
+            double meanDarkness = CvInvoke.Mean(this.OutputImages.BlackWhiteImage).ToArray()[0];
 
             Debug.WriteLine($"Mean: {meanDarkness}, Mean diff {meanDarkness - last} ");
             this.last = meanDarkness;
-
-            return (false, subBlackWhiteImg);
         }
 
-        private (bool, Mat) detectCracks(ref Mat inImg, ref MKeyPoint[] brightKeypoints, RotatedRect roi)
+        private void detectCracks(RotatedRect roi)
         {
-            Mat subWhiteBlackImg = inImg.Clone();
-            ObjectDrawer.DrawPoints(ref subWhiteBlackImg, ref brightKeypoints, Color.Black, 2, -1);
-            Mat roiWhiteBlackImage = new();
+            this.OutputImages.SubWhiteBlackImage = this.OutputImages.WhiteBlackImage.Clone();
+            ObjectDrawer.DrawPoints(ref this.OutputImages.SubWhiteBlackImage, this.Holes, Color.Black, 2, -1);
             Rectangle rect = new Rectangle((int)(roi.Center.X - roi.Size.Width / 2),
                                         (int)(roi.Center.Y - roi.Size.Height / 2),
                                         (int)(roi.Size.Height), (int)(roi.Size.Width));
-            //CvInvoke.cvGetSubRect(whiteBlackImg, roiWhiteBlackImage, rect);
-            Image<Gray, byte> img = subWhiteBlackImg.ToImage<Gray, byte>();
+            Image<Gray, byte> img = this.OutputImages.SubWhiteBlackImage.ToImage<Gray, byte>();
             img.ROI = rect;
             double[] meanBrightnessArr = CvInvoke.Mean(img.Copy()).ToArray();
             double meanBrightness = meanBrightnessArr.Sum() / meanBrightnessArr.Length;
-
-            return (false, subWhiteBlackImg);
         }
 
-        // Runs edge detection
-        public Mat runBoardEdgeDetect()
+        public void runBoardEdgedetect()
         {
-            (List<RotatedRect> boxList, Mat cannyImg) = detectBoardEdge(ref this._grayImg, ref this._outPutImg);
-            return cannyImg;
+            detectBoardEdge(ref this._grayImg);
         }
 
         // Runs hole and crack detection on grayImg and writes result to outPutImg
         // Returns images of bright spots
-        public (Mat, Mat) runHoleCrackDetect()
+        public double runHoleCrackDetect()
         {
-            (MKeyPoint[] brightKeypoints, Mat whiteBlackImg) = detectHoles(ref this._grayImg, ref this._outPutImg);
-            (bool isCracked, Mat subWhiteBlackImg) = detectCracks(ref whiteBlackImg, ref brightKeypoints, this._roi);
+            detectHoles(ref this._grayImg);
+            detectCracks(this.BoardEdge);
 
-            return (whiteBlackImg, subWhiteBlackImg);
+            double brightness = ObjDetector.detectCracks(ref this.OutputImages.SubWhiteBlackImage, this.BoardEdge);
+
+            return brightness;
         }
 
         // Runs knot and stain detection on grayImg and writes result to outPutImg
         // Returns images of dark spots
-        public (Mat, Mat) runKnotStainDetect()
+        public double runKnotStainDetect()
         {
-            int meanColor = calculateMeanColor(ref this._colorImg);
+            int meanColor = calculateMeanColor(ref this._colorImg) / 2 + this.ThresholdOffset;
 
-            (MKeyPoint[] darkKeyPoints, Mat blackWhiteImg) = detectKnots(ref this._grayImg, ref this._outPutImg, 
-                meanColor / 2 + this.ThresholdOffset, this.ErodeIter, this.DilateIter);
-            (bool isStained, Mat subBlackWhiteImg) = detectStains(ref blackWhiteImg, ref darkKeyPoints);
+            detectKnots(ref this._grayImg, meanColor, this.ErodeIter, this.DilateIter);
+            detectStains();
 
-            return (blackWhiteImg, subBlackWhiteImg);
+            double darkness = ObjDetector.detectStains(ref this.OutputImages.SubBlackWhiteImage);
+
+            return darkness;
         }
 
-        public void detect(MainWindow win)
+        public void drawObjects()
         {
-            #region Detect board edge
-            (List<RotatedRect> boxList, Mat cannyImg) = detectBoardEdge(ref _grayImg, ref _outPutImg);
-            #endregion
-
-            #region Detect holes
-            (MKeyPoint[] brightKeypoints, Mat whiteBlackImg) = detectHoles(ref _grayImg, ref _outPutImg);
-            #endregion
-
-            #region Detect knots
-            int meanColor = calculateMeanColor(ref _outPutImg);
-            (MKeyPoint[] darkKeyPoints, Mat blackWhiteImg) = detectKnots(ref _grayImg, ref _outPutImg, 
-                meanColor / 2 + this.ThresholdOffset, this.ErodeIter, this.DilateIter);
-            #endregion
-
-            #region Detect stains
-            (bool isStained, Mat subBlackWhiteImg) = detectStains(ref blackWhiteImg, ref darkKeyPoints);
-            #endregion
-
-            #region Detect cracks
-            (bool isCracked, Mat subWhiteBlackImg) = detectCracks(ref whiteBlackImg, ref brightKeypoints, this._roi);
-            #endregion
-
-            win.addImageToBox(_outPutImg, 0);
-            win.addImageToBox(cannyImg, 3);
-            win.addImageToBox(blackWhiteImg, 1);
-            win.addImageToBox(subBlackWhiteImg, 4);
-            win.addImageToBox(whiteBlackImg, 2);
-            win.addImageToBox(subWhiteBlackImg, 5);
-        }
-
-        public Mat getOutputImg()
-        {
-            return _outPutImg;
+            ObjectDrawer.DrawRectangles(ref this.OutputImages.OutPutImage, this.BoardEdge, OUTER_PADDING);
+            ObjectDrawer.DrawPoints(ref this.OutputImages.OutPutImage, this.Holes, Color.Blue);
+            ObjectDrawer.DrawPoints(ref this.OutputImages.OutPutImage, this.Knots, Color.Red);
         }
 
         public void resetOutputImg()
         {
-            _outPutImg = _colorImg.Clone();
+            this.OutputImages.OutPutImage = _colorImg.Clone();
         }
 
         public void setDefaultValues()
