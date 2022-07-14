@@ -41,6 +41,11 @@ namespace Defect_detect_ui
             for (int i = 1; i < camIndexes.Length; ++i)
             {
                 Mat frame = capture(camIndexes[i]);
+
+                // Check if a frame was captured.
+                // Also continues if camera doesn't exists
+                if (frame == null) continue;
+
                 CvInvoke.Resize(frame, frame, imageSize);
                 CvInvoke.HConcat(output, frame, output);
             }
