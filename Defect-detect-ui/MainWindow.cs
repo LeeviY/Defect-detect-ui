@@ -1,11 +1,8 @@
-﻿using System;
+﻿using Emgu.CV;
+using Emgu.CV.UI;
+using System;
 using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
-
-
-using Emgu.CV;
-using Emgu.CV.UI;
 
 namespace Defect_detect_ui
 {
@@ -15,6 +12,7 @@ namespace Defect_detect_ui
         private int _fileIndex;
 
         private Detector _detector;
+        private CameraCapture _cameraCapture;
         public MainWindow()
         {
             InitializeComponent();
@@ -23,10 +21,10 @@ namespace Defect_detect_ui
             string imageDirectory = projectDirectory + @"\Images";
             _filePaths = Directory.GetFiles(imageDirectory, "*.bmp");
             string filename = imageDirectory + @"\SV_image_-766126070.bmp";
+            //string filename = imageDirectory + @"\SV_Cam1_-12386187.bmp";
 
             _detector = new Detector(filename);
-
-            CameraCapture.capture();
+            _cameraCapture = new CameraCapture(new int[] { 0, 2, 1 });
         }
 
         public void addImageToBox(Mat image, int boxIndex)
@@ -34,7 +32,7 @@ namespace Defect_detect_ui
             //Mat resized = new();
             //CvInvoke.Resize(image, resized, new Size(imageBox1.Width, imageBox1.Height));
             ImageBox[] boxes = new ImageBox[] { imageBox1, imageBox2, imageBox3, imageBox4, imageBox5, imageBox6 };
-            boxes[boxIndex].Image = image;   
+            boxes[boxIndex].Image = image;
         }
 
         private void setDefaults()
@@ -63,7 +61,7 @@ namespace Defect_detect_ui
             _detector.runBoardEdgedetect();
             double brigthness = _detector.runKnotStainDetect();
             double darkness = _detector.runHoleCrackDetect();
-            
+
             _detector.drawObjects();
 
             addImageToBox(_detector.OutputImages.OutPutImage, 0);
@@ -190,8 +188,8 @@ namespace Defect_detect_ui
 
         private void buttonCapture_Click(object sender, EventArgs e)
         {
-            CameraCapture.captureCameras(new int[2] { 0, 1 });
-            CameraCapture.captureCameras(new int[2] { 0, 1 });
+            _cameraCapture.captureCameras();
+            _cameraCapture.captureCameras();
         }
     }
 }

@@ -1,21 +1,18 @@
-﻿using System;
+﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
+using Emgu.CV.Features2D;
+using Emgu.CV.Structure;
+using Emgu.CV.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using Emgu.CV;
-using Emgu.CV.CvEnum;
-using Emgu.CV.Structure;
-using Emgu.CV.Util;
-using Emgu.CV.Features2D;
 
 namespace Defect_detect_ui
 {
     internal class ObjectDetector
     {
-        public struct RectangleParams 
+        public struct RectangleParams
         {
             public RectangleParams(int minArea, int minAngle, int maxAngle)
             {
@@ -26,7 +23,7 @@ namespace Defect_detect_ui
 
             public int MinArea;
             public int MinTheta;
-            public int MaxTheta;                
+            public int MaxTheta;
         };
 
         public SimpleBlobDetectorParams BlobParams;
@@ -109,7 +106,7 @@ namespace Defect_detect_ui
             return boxList;
         }
 
-        public void setBlobParams(int area = 100, float circularity = 0.1f, 
+        public void setBlobParams(int area = 100, float circularity = 0.1f,
             float convexity = 0f, float inertia = 0.01f)
         {
             this.BlobParams.FilterByArea = true;
@@ -133,7 +130,7 @@ namespace Defect_detect_ui
         public MKeyPoint[] detectBlobs(ref Mat image, Byte color)
         {
             this.BlobParams.blobColor = color;
-            SimpleBlobDetector detector = new (this.BlobParams);
+            SimpleBlobDetector detector = new(this.BlobParams);
             MKeyPoint[] keypoints = detector.Detect(image);
 
             return keypoints;

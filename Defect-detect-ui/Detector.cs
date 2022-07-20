@@ -75,6 +75,7 @@ namespace Defect_detect_ui
 
         public void openImage(string filename)
         {
+            Debug.WriteLine("Images from " + filename);
             _colorImg = ImageProcessor.ReadImage(filename, ImreadModes.Color);
             _outPutImg = _colorImg.Clone();
             _grayImg = new();
@@ -100,7 +101,7 @@ namespace Defect_detect_ui
             // If no border is found sets board edge as half of image size.
             if (boxList.Count == 0)
             {
-                this.BoardEdge = new RotatedRect(new PointF(_colorImg.Width / 2, _colorImg.Height / 2), 
+                this.BoardEdge = new RotatedRect(new PointF(_colorImg.Width / 2, _colorImg.Height / 2),
                                                  new SizeF(_colorImg.Width, _colorImg.Height), 0);
             }
             else

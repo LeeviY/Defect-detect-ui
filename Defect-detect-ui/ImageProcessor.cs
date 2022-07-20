@@ -81,7 +81,7 @@ namespace Defect_detect_ui
         public static Mat AddImageBorder(Mat image, int size)
         {
             Mat borderImg = new();
-            CvInvoke.CopyMakeBorder(image, borderImg, size, size, size, size, 
+            CvInvoke.CopyMakeBorder(image, borderImg, size, size, size, size,
                 BorderType.Constant, new MCvScalar(255, 255, 255));
             return borderImg;
         }

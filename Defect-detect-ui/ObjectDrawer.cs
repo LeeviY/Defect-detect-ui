@@ -1,8 +1,6 @@
-﻿using System.Drawing;
-using System.Collections.Generic;
-
-using Emgu.CV;
+﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using System.Drawing;
 
 namespace Defect_detect_ui
 {
@@ -18,8 +16,8 @@ namespace Defect_detect_ui
             }
             for (int i = 0; i < 4; ++i)
             {
-                CvInvoke.Line(image, Point.Round(vertices[i]), 
-                    Point.Round(vertices[(i + 1) % 4]), 
+                CvInvoke.Line(image, Point.Round(vertices[i]),
+                    Point.Round(vertices[(i + 1) % 4]),
                     new Bgr(Color.Green).MCvScalar, 2);
             }
         }

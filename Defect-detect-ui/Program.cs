@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Defect_detect_ui
